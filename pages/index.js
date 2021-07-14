@@ -2,7 +2,7 @@ import MainGrid from '../src/components/MainGrid'
 import Box from '../src/components/Box'
 import {ProfileRelationsBoxWrapper} from '../src/components/ProfileRelations';
 import { AlurakutMenu, AlurakutProfileSidebarMenuDefault, OrkutNostalgicIconSet } from '../src/lib/AlurakutCommons'
-import React,{useState} from 'react';
+import React,{useState,useEffect} from 'react';
 
 function ProfileSiderbar(props){
   return(
@@ -23,9 +23,49 @@ function ProfileSiderbar(props){
   }
 
 
+  
+
+
+
+
+  
+
+  function ProfileRelations(props){
+
+
+
+    return (
+      <ProfileRelationsBoxWrapper >
+      <h2 className="smallTitle"> Seguidores ({props.items.length})</h2>
+     
+        <ul style={{ overflow: 'auto' }}>
+          {props.items.map((itemAtual)=>{
+            
+            return(
+              <li key={itemAtual.id}>
+                <a  >
+                  {/*http://placehold.it/300x300*/}
+                  <img src={`${itemAtual.avatar_url}`} />
+                  <span>{itemAtual.login}</span>
+                </a>
+              </li>
+            )
+          })}
+        </ul>
+
+     </ProfileRelationsBoxWrapper>
+    )
+  }
+
+
+
+
 
 export default function Home() {
+  const [seguidores,setSeguidores] = useState([]);
 
+
+  
   const [Comunidades,setComunidades] = useState([])
 
   const githubUser = "kametobu"
@@ -35,6 +75,23 @@ export default function Home() {
   'rafaballerini',
   'marcobrunodev',
   'felipefialho']
+
+
+
+
+  useEffect(function(){
+    fetch('https://api.github.com/users/peas/followers').then((res)=>{
+      if(res.ok){
+        return res.json()
+      }
+      throw new Error("ERRO falta um s")
+      
+    }).then((json)=>{
+      setSeguidores(json)
+    }).catch((erro)=>{
+      console.log(erro)
+    })
+  }, [])
 
   return (
     <>
@@ -112,7 +169,7 @@ export default function Home() {
         <ProfileRelationsBoxWrapper >
          <h2 className="smallTitle"> Comunidades ({Comunidades.length})</h2>
         
-        <ul>
+        <ul style={{ overflow: 'auto' }}>
           {Comunidades.map((itemAtual)=>{
             
             return(
@@ -128,6 +185,12 @@ export default function Home() {
         </ul>
 
         </ProfileRelationsBoxWrapper>
+
+
+          <ProfileRelations items={seguidores}/>
+      
+
+
       </div>
         
     </MainGrid>
