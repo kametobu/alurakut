@@ -63,8 +63,6 @@ function ProfileSiderbar(props){
 
 export default function Home() {
   const [seguidores,setSeguidores] = useState([]);
-
-
   
   const [Comunidades,setComunidades] = useState([])
 
@@ -91,6 +89,32 @@ export default function Home() {
     }).catch((erro)=>{
       console.log(erro)
     })
+    const token = '81c9a00ffa48df539a7ec78801afd0'
+    fetch('https://graphql.datocms.com/',{
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': `${token}`,
+      },
+      body: JSON.stringify({
+        query: `query {
+          allComunidades{
+            title
+            id
+            imageUrl
+            creatorSlug
+          }
+        }`
+      }),
+    }
+  )
+  .then((res)=>(res.json()))
+  .then((res)=>{
+    setComunidades(res.data.allComunidades)
+    
+  })
+
   }, [])
 
   return (
@@ -121,7 +145,22 @@ export default function Home() {
 
                   const dadosForm = new FormData(event.target);
                   
-                  setComunidades([...Comunidades,{nome: dadosForm.get('title'), imagem: dadosForm.get('image')}])
+                  
+
+                  fetch('/api/comunidades',{
+                    method: "POST",
+                    headers:{
+                      'Content-Type': 'application/json',
+                      'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({title: dadosForm.get('title'),imageUrl: dadosForm.get('image'),creatorSlug: "kametobu"})
+                    
+                  }).then(async (res) =>{
+                    const dados = await res.json()
+
+                    setComunidades([...Comunidades,dados.registroCriado])
+                    
+                  })
                   
             }}>
               <div>
@@ -173,11 +212,11 @@ export default function Home() {
           {Comunidades.map((itemAtual)=>{
             
             return(
-              <li key={itemAtual.nome}>
+              <li key={itemAtual.id}>
                 <a  >
                   {/*http://placehold.it/300x300*/}
-                  <img src={`${itemAtual.imagem}`} />
-                  <span>{itemAtual.nome}</span>
+                  <img src={`${itemAtual.imageUrl}`} />
+                  <span>{itemAtual.title}</span>
                 </a>
               </li>
             )
