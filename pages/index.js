@@ -22,12 +22,6 @@ function ProfileSiderbar(props){
   )
   }
 
-
-  
-
-
-
-
   
 
   function ProfileRelations(props){
