@@ -3,6 +3,8 @@ import Box from '../src/components/Box'
 import {ProfileRelationsBoxWrapper} from '../src/components/ProfileRelations';
 import { AlurakutMenu, AlurakutProfileSidebarMenuDefault, OrkutNostalgicIconSet } from '../src/lib/AlurakutCommons'
 import React,{useState,useEffect} from 'react';
+import nookies from 'nookies';
+import jwt  from 'jsonwebtoken';
 
 function ProfileSiderbar(props){
   return(
@@ -55,12 +57,12 @@ function ProfileSiderbar(props){
 
 
 
-export default function Home() {
+export default function Home(props) {
   const [seguidores,setSeguidores] = useState([]);
   
   const [Comunidades,setComunidades] = useState([])
 
-  const githubUser = "kametobu"
+  const githubUser = props.githubUser
   const pessoasFavoritas = ['juunegreiros',
   'omariosouto',
   'peas',
@@ -229,4 +231,28 @@ export default function Home() {
     </MainGrid>
     </>
     )
+}
+
+
+
+export async function getServerSideProps(context) {
+  const cookies = nookies.get(context)
+  const token = cookies.USER_TOKEN;
+  const {user} = jwt.decode(token);
+  console.log(jwt.decode(token))
+  const autenticado = true
+  if(!autenticado){
+    return{
+      redirect:{
+        destination: "/login",
+        permanent: false,
+      }
+    }
+
+  }
+  return {
+    props: {
+      githubUser: "peas"
+    }, // will be passed to the page component as props
+  }
 }
